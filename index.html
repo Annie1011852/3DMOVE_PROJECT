@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工程顧問公司 - 專案工時回報</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* 自定義 loading 動畫 */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #ffffff;
+            width: 20px;
+            height: 20px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 隱藏 Chrome, Safari, Edge, Opera 的數字輸入框箭頭 */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen py-8 px-4 font-sans text-gray-800">
+
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden md:max-w-lg">
+        
+        <div class="bg-blue-600 py-6 px-6 text-center">
+            <h1 class="text-2xl font-bold text-white tracking-wide">工程顧問公司</h1>
+            <p class="text-blue-100 text-sm mt-1">專案工時回報系統</p>
+        </div>
+
+        <form id="timesheetForm" class="py-6 px-6 space-y-5">
+            
+            <div>
+                <label for="date" class="block text-sm font-medium text-gray-700 mb-1">日期</label>
+                <input type="date" id="date" name="date" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+            </div>
+
+            <div>
+                <label for="staffId" class="block text-sm font-medium text-gray-700 mb-1">填表人員</label>
+                <div class="relative">
+                    <select id="staffId" name="staffId" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none appearance-none bg-white">
+                        <option value="" disabled selected>載入中...</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label for="projectId" class="block text-sm font-medium text-gray-700 mb-1">專案名稱</label>
+                <div class="relative">
+                    <select id="projectId" name="projectId" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none appearance-none bg-white">
+                        <option value="" disabled selected>載入中...</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label for="workType" class="block text-sm font-medium text-gray-700 mb-1">工作類型</label>
+                <div class="relative">
+                    <select id="workType" name="workType" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none appearance-none bg-white">
+                        <option value="會議">會議</option>
+                        <option value="報告撰寫">報告撰寫</option>
+                        <option value="現場勘查">現場勘查</option>
+                        <option value="設計繪圖">設計繪圖</option>
+                        <option value="行政庶務">行政庶務</option>
+                        <option value="其他">其他</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label for="hours" class="block text-sm font-medium text-gray-700 mb-1">投入工時 (小時)</label>
+                <input type="number" id="hours" name="hours" placeholder="例如: 3.5" step="0.5" min="0" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+            </div>
+
+            <div>
+                <label for="note" class="block text-sm font-medium text-gray-700 mb-1">工作內容摘要</label>
+                <textarea id="note" name="note" rows="3" placeholder="請簡述今日產出..." required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn"
+                class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 active:bg-blue-800 transition duration-300 flex justify-center items-center shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                <span>送出回報</span>
+            </button>
+        </form>
+        
+        <div class="bg-gray-50 px-6 py-4 text-center text-xs text-gray-500 border-t border-gray-100">
+            &copy; 2026 Engineering Consultant Co.
+        </div>
+    </div>
+
+    <script>
+        // 設定您的 Apps Script 部署網址
+        const API_URL = "https://script.google.com/macros/s/AKfycby2syGf0ZDGNYTW0aSm9_CSQk8u2rElDxwNZBqSyfl1qHDFtJ-2aYaaTVS4Q9sH97LaaA/exec";
+
+        // 頁面載入時執行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. 設定日期欄位預設為今天
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+
+            // 2. 載入下拉選單資料
+            fetchDropdownData();
+        });
+
+        // 載入選單資料的函式
+        function fetchDropdownData() {
+            // 載入專案清單
+            fetch(`${API_URL}?action=getProjects`)
+                .then(response => response.json())
+                .then(data => populateSelect('projectId', data, '請選擇專案'))
+                .catch(error => console.error('Error loading projects:', error));
+
+            // 載入人員清單
+            fetch(`${API_URL}?action=getStaff`)
+                .then(response => response.json())
+                .then(data => populateSelect('staffId', data, '請選擇人員'))
+                .catch(error => console.error('Error loading staff:', error));
+        }
+
+        // 填充 Select 的輔助函式
+        function populateSelect(elementId, items, defaultText) {
+            const select = document.getElementById(elementId);
+            select.innerHTML = `<option value="" disabled selected>${defaultText}</option>`;
+            
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id; // 這裡用 id 當作 value
+                option.textContent = item.name; // 顯示名稱
+                select.appendChild(option);
+            });
+        }
+
+        // 處理表單送出
+        document.getElementById('timesheetForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // 阻止表單預設跳轉
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnText = submitBtn.innerHTML;
+
+            // 改變按鈕狀態 (Loading)
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<div class="loader mr-2"></div> 傳送中...`;
+
+            // 收集表單資料
+            const formData = {
+                action: 'submitTimesheet', // 告訴後端這是「送出工時」的動作
+                date: document.getElementById('date').value,
+                staffId: document.getElementById('staffId').value,
+                projectId: document.getElementById('projectId').value,
+                workType: document.getElementById('workType').value,
+                hours: document.getElementById('hours').value,
+                note: document.getElementById('note').value
+            };
+
+            // 送出資料到 Apps Script
+            fetch(API_URL, {
+                method: 'POST',
+                // 關鍵：使用 text/plain 避免 CORS 預檢請求 (Preflight)
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // 成功彈窗
+                    Swal.fire({
+                        icon: 'success',
+                        title: '回報成功！',
+                        text: '您的工時紀錄已儲存。',
+                        confirmButtonColor: '#2563EB'
+                    });
+                    
+                    // 清空表單，但保留日期
+                    const currentDate = document.getElementById('date').value;
+                    document.getElementById('timesheetForm').reset();
+                    document.getElementById('date').value = currentDate;
+                } else {
+                    throw new Error(data.message || '未知錯誤');
+                }
+            })
+            .catch(error => {
+                // 失敗彈窗
+                Swal.fire({
+                    icon: 'error',
+                    title: '傳送失敗',
+                    text: '請檢查網路連線或稍後再試。\n' + error.message,
+                    confirmButtonColor: '#EF4444'
+                });
+            })
+            .finally(() => {
+                // 恢復按鈕狀態
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            });
+        });
+    </script>
+</body>
+</html>
